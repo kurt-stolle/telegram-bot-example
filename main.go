@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/tucnak/telebot"
 	"math/rand"
+	"net/url"
+	"strings"
 	"time"
 )
 
@@ -32,7 +34,7 @@ func main() {
 	bot.Listen(messages, 1*time.Second)
 
 	for message := range messages {
-		if message.Text == "/frank" {
+		if strings.Contains(strings.ToLower(message.Text), "/frank") {
 			switch rand.Intn(5) {
 			case 1:
 				var buffer bytes.Buffer
@@ -57,6 +59,26 @@ func main() {
 					frankQuotes[rand.Intn(len(frankQuotes))], nil)
 			}
 
+		} else if strings.Contains(strings.ToLower(message.Text), "/magictriangle") {
+			query := strings.Replace(strings.ToLower(message.Text), "/magictriangle", "", -1)
+			query = url.QueryEscape(query)
+
+			bot.SendMessage(message.Chat, "Use the #magictriangle!", nil)
+
+			var bufGoogle bytes.Buffer
+			bufGoogle.WriteString("https://www.google.com/search?q=")
+			bufGoogle.WriteString(query)
+			bot.SendMessage(message.Chat, bufGoogle.String(), nil)
+
+			var bufSO bytes.Buffer
+			bufSO.WriteString("http://stackoverflow.com/search?q=")
+			bufSO.WriteString(query)
+			bot.SendMessage(message.Chat, bufSO.String(), nil)
+
+			var bufWiki bytes.Buffer
+			bufWiki.WriteString("https://en.wikipedia.org/w/index.php?search=")
+			bufWiki.WriteString(query)
+			bot.SendMessage(message.Chat, bufWiki.String(), nil)
 		}
 	}
 }
