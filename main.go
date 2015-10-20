@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/tucnak/telebot"
+	"io"
 	"math/rand"
 	"net/url"
+	"os"
 	"strings"
 	"time"
 )
@@ -15,12 +17,27 @@ const (
 )
 
 func main() {
+	// Hello world
+	fmt.Println("Starting FrankBoermanBot")
+
+	// Basic variables
 	rand.Seed(time.Now().UTC().UnixNano()) // Set the random Seed
 
 	var frankQuotes = []string{"Welcome to Uni", "no lol XD", "Offcourse", "Unfortiantly", "#magicaltriangle"}
 
-	fmt.Println("Starting FrankBoermanBot")
+	// Read the key
+	fi, err := os.Open("key.txt") // Key is in current directory
+	if err != nil {               // Check for errors
+		panic(err)
+	}
 
+	defer func() { // close fi on exit and check for its returned error
+		if err := fi.Close(); err != nil {
+			panic(err)
+		}
+	}()
+
+	// Create a bot
 	bot, err := telebot.NewBot("170317817:AAG17sfF7EVwX65alr2XIc2CzlNfLfajqas")
 
 	if err != nil {
@@ -28,6 +45,7 @@ func main() {
 		return
 	}
 
+	// Start listenting
 	fmt.Println("Bot active!")
 
 	messages := make(chan telebot.Message)
@@ -35,6 +53,7 @@ func main() {
 
 	for message := range messages {
 		if strings.Contains(strings.ToLower(message.Text), "/frank") {
+			fmt.Println(message.Sender.FirstName, "ran the /frank command...")
 			switch rand.Intn(5) {
 			case 1:
 				var buffer bytes.Buffer
@@ -60,6 +79,7 @@ func main() {
 			}
 
 		} else if strings.Contains(strings.ToLower(message.Text), "/magictriangle") {
+			fmt.Println(message.Sender.FirstName, "ran the /magictriangle command...")
 			query := strings.Replace(strings.ToLower(message.Text), "/magictriangle", "", -1)
 			query = url.QueryEscape(query)
 
