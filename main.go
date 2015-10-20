@@ -18,7 +18,7 @@ const (
 
 func main() {
 	// Hello world
-	fmt.Println("Starting FrankBoermanBot...")
+	fmt.Println("Starting Frank Boerman Bot...")
 
 	// Basic variables
 	rand.Seed(time.Now().UTC().UnixNano()) // Set the random Seed
