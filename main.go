@@ -18,7 +18,7 @@ const (
 
 func main() {
 	// Hello world
-	fmt.Println("Starting FrankBoermanBot")
+	fmt.Println("Starting FrankBoermanBot...")
 
 	// Basic variables
 	rand.Seed(time.Now().UTC().UnixNano()) // Set the random Seed
@@ -26,6 +26,7 @@ func main() {
 	var frankQuotes = []string{"Welcome to Uni", "no lol XD", "Offcourse", "Unfortiantly", "#magicaltriangle"}
 
 	// Read the key
+	var bufKey bytes.Buffer
 	fi, err := os.Open("key.txt") // Key is in current directory
 	if err != nil {               // Check for errors
 		panic(err)
@@ -37,8 +38,27 @@ func main() {
 		}
 	}()
 
+	bufRead := make([]byte, 1024) // Make a buffer to read into
+	for {
+		// read a chunk
+		n, err := fi.Read(bufRead)
+		if err != nil && err != io.EOF {
+			panic(err)
+		}
+		if n == 0 {
+			break
+		}
+
+		// write a chunk
+		if _, err := bufKey.Write(bufRead[:n]); err != nil {
+			panic(err)
+		}
+	}
+
 	// Create a bot
-	bot, err := telebot.NewBot("170317817:AAG17sfF7EVwX65alr2XIc2CzlNfLfajqas")
+	key := bufKey.String()
+	fmt.Println("Telegram API key:", key)
+	bot, err := telebot.NewBot(key)
 
 	if err != nil {
 		fmt.Println(err)
@@ -46,7 +66,7 @@ func main() {
 	}
 
 	// Start listenting
-	fmt.Println("Bot active!")
+	fmt.Println(bot.Identity.FirstName, " is active")
 
 	messages := make(chan telebot.Message)
 	bot.Listen(messages, 1*time.Second)
