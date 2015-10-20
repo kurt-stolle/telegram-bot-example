@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/tucnak/telebot"
+	"math/rand"
 	"time"
 )
 
@@ -11,6 +13,10 @@ const (
 )
 
 func main() {
+	rand.Seed(time.Now().UTC().UnixNano()) // Set the random Seed
+
+	var frankQuotes = []string{"Welcome to Uni", "no lol XD", "Offcourse", "Unfortiantly", "#magicaltriangle"}
+
 	fmt.Println("Starting FrankBoermanBot")
 
 	bot, err := telebot.NewBot("170317817:AAG17sfF7EVwX65alr2XIc2CzlNfLfajqas")
@@ -27,8 +33,30 @@ func main() {
 
 	for message := range messages {
 		if message.Text == "/frank" {
-			bot.SendMessage(message.Chat,
-				"Hello, "+message.Sender.FirstName+"!", nil)
+			switch rand.Intn(5) {
+			case 1:
+				var buffer bytes.Buffer
+
+				buffer.WriteString("STFU ")
+				buffer.WriteString(message.Sender.FirstName)
+				buffer.WriteString("!")
+
+				bot.SendMessage(message.Chat, buffer.String(), nil)
+				break
+			case 2:
+				var buffer bytes.Buffer
+
+				buffer.WriteString("NO SPAM! Last warning ")
+				buffer.WriteString(message.Sender.FirstName)
+				buffer.WriteString("!")
+
+				bot.SendMessage(message.Chat, buffer.String(), nil)
+				break
+			default:
+				bot.SendMessage(message.Chat,
+					frankQuotes[rand.Intn(len(frankQuotes))], nil)
+			}
+
 		}
 	}
 }
