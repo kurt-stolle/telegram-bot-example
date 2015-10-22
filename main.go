@@ -77,7 +77,7 @@ func main() {
 	bot.Listen(messages, 1*time.Second)
 
 	for message := range messages {
-		text := strings.Replace(strings.ToLower(message.Text), "@"+bot.Identity.Username, "", -1)
+		text := strings.ToLower(strings.Replace(message.Text, "@"+bot.Identity.Username, "", -1))
 
 		if strings.Contains(text, "frank") {
 			fmt.Println(message.Sender.FirstName, "ran 'frank' in ", message.Chat.Title)
