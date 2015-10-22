@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"net/url"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 )
@@ -43,6 +44,7 @@ func main() {
 		// read a chunk
 		n, err := fi.Read(bufRead)
 		if err != nil && err != io.EOF {
+			fi.Close()
 			panic(err)
 		}
 		if n == 0 {
@@ -51,9 +53,12 @@ func main() {
 
 		// write a chunk
 		if _, err := bufKey.Write(bufRead[:n]); err != nil {
+			fi.Close()
 			panic(err)
 		}
 	}
+
+	fi.Close()
 
 	// Create a bot
 	key := bufKey.String()
@@ -72,26 +77,14 @@ func main() {
 	bot.Listen(messages, 1*time.Second)
 
 	for message := range messages {
-		if strings.Contains(strings.ToLower(message.Text), "/frank") {
-			fmt.Println(message.Sender.FirstName, "ran the /frank command...")
+		if strings.Contains(strings.ToLower(message.Text), "frank") {
+			fmt.Println(message.Sender.FirstName, "ran 'frank' in ", message.Chat.Title)
 			switch rand.Intn(5) {
 			case 1:
-				var buffer bytes.Buffer
-
-				buffer.WriteString("STFU ")
-				buffer.WriteString(message.Sender.FirstName)
-				buffer.WriteString("!")
-
-				bot.SendMessage(message.Chat, buffer.String(), nil)
+				bot.SendMessage(message.Chat, "STFU "+message.Sender.FirstName+"!", nil)
 				break
 			case 2:
-				var buffer bytes.Buffer
-
-				buffer.WriteString("NO SPAM! Last warning ")
-				buffer.WriteString(message.Sender.FirstName)
-				buffer.WriteString("!")
-
-				bot.SendMessage(message.Chat, buffer.String(), nil)
+				bot.SendMessage(message.Chat, "NO SPAM! Last warning "+message.Sender.FirstName+"!", nil)
 				break
 			default:
 				bot.SendMessage(message.Chat,
@@ -99,26 +92,77 @@ func main() {
 			}
 
 		} else if strings.Contains(strings.ToLower(message.Text), "/magictriangle") {
-			fmt.Println(message.Sender.FirstName, "ran the /magictriangle command...")
-			query := strings.Replace(strings.ToLower(message.Text), "/magictriangle", "", -1)
+			fmt.Println(message.Sender.FirstName, "ran /magictriangle in ", message.Chat.Title)
+
+			var query string
+			query = strings.ToLower(message.Text)
+			query = strings.Replace(query, "/magictriangle", "", -1)
+			query = strings.Replace(query, "@"+bot.Identity.Username, "", -1)
 			query = url.QueryEscape(query)
 
-			bot.SendMessage(message.Chat, "Use the #magictriangle!", nil)
+			bot.SendMessage(message.Chat, "Use the #magictriangle!\nhttps://www.google.com/search?q="+query+"\nhttp://stackoverflow.com/search?q="+query+"\nhttps://en.wikipedia.org/w/index.php?search="+query, nil)
+		} else if strings.Contains(strings.ToLower(message.Text), "/essay") {
+			fmt.Println(message.Sender.FirstName, "ran /essay in ", message.Chat.Title)
 
-			var bufGoogle bytes.Buffer
-			bufGoogle.WriteString("https://www.google.com/search?q=")
-			bufGoogle.WriteString(query)
-			bot.SendMessage(message.Chat, bufGoogle.String(), nil)
+			dirname := "." + string(filepath.Separator) + "essays" + string(filepath.Separator)
+			d, err := os.Open(dirname)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+			defer d.Close()
 
-			var bufSO bytes.Buffer
-			bufSO.WriteString("http://stackoverflow.com/search?q=")
-			bufSO.WriteString(query)
-			bot.SendMessage(message.Chat, bufSO.String(), nil)
+			files, err := d.Readdir(-1)
 
-			var bufWiki bytes.Buffer
-			bufWiki.WriteString("https://en.wikipedia.org/w/index.php?search=")
-			bufWiki.WriteString(query)
-			bot.SendMessage(message.Chat, bufWiki.String(), nil)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+
+			var validFiles []os.FileInfo
+
+			for _, file := range files {
+				if file.Mode().IsRegular() {
+					validFiles = append(validFiles, file)
+				}
+			}
+
+			var randomEssay = validFiles[rand.Intn(len(validFiles))]
+
+			var buf bytes.Buffer
+			fi, err := os.Open("essays" + string(filepath.Separator) + randomEssay.Name()) // Key is in current directory
+			if err != nil {                                                                // Check for errors
+				panic(err)
+			}
+
+			defer func() { // close fi on exit and check for its returned error
+				if err := fi.Close(); err != nil {
+					panic(err)
+				}
+			}()
+
+			bufRead := make([]byte, 1024) // Make a buffer to read into
+			for {
+				// read a chunk
+				n, err := fi.Read(bufRead)
+				if err != nil && err != io.EOF {
+					fi.Close()
+					panic(err)
+				}
+				if n == 0 {
+					break
+				}
+
+				// write a chunk
+				if _, err := buf.Write(bufRead[:n]); err != nil {
+					fi.Close()
+					panic(err)
+				}
+			}
+
+			fi.Close()
+
+			bot.SendMessage(message.Chat, buf.String(), nil)
 		}
 	}
 }

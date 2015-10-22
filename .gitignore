@@ -4,7 +4,7 @@
 *.so
 
 # Key
-key.txt
+*key.txt
 
 # Folders
 _obj
