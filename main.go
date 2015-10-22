@@ -77,7 +77,9 @@ func main() {
 	bot.Listen(messages, 1*time.Second)
 
 	for message := range messages {
-		if strings.Contains(strings.ToLower(message.Text), "frank") {
+		text := strings.Replace(strings.ToLower(message.Text), "@"+bot.Identity.Username, "", -1)
+
+		if strings.Contains(text, "frank") {
 			fmt.Println(message.Sender.FirstName, "ran 'frank' in ", message.Chat.Title)
 			switch rand.Intn(5) {
 			case 1:
@@ -91,17 +93,15 @@ func main() {
 					frankQuotes[rand.Intn(len(frankQuotes))], nil)
 			}
 
-		} else if strings.Contains(strings.ToLower(message.Text), "/magictriangle") {
+		} else if strings.Contains(text, "/magictriangle") {
 			fmt.Println(message.Sender.FirstName, "ran /magictriangle in ", message.Chat.Title)
 
 			var query string
-			query = strings.ToLower(message.Text)
-			query = strings.Replace(query, "/magictriangle", "", -1)
-			query = strings.Replace(query, "@"+bot.Identity.Username, "", -1)
+			query = strings.Replace(text, "/magictriangle", "", -1)
 			query = url.QueryEscape(query)
 
 			bot.SendMessage(message.Chat, "Use the #magictriangle!\nhttps://www.google.com/search?q="+query+"\nhttp://stackoverflow.com/search?q="+query+"\nhttps://en.wikipedia.org/w/index.php?search="+query, nil)
-		} else if strings.Contains(strings.ToLower(message.Text), "/essay") {
+		} else if strings.Contains(text, "/essay") {
 			fmt.Println(message.Sender.FirstName, "ran /essay in ", message.Chat.Title)
 
 			dirname := "." + string(filepath.Separator) + "essays" + string(filepath.Separator)
