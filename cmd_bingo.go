@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/tucnak/telebot"
+	"github.com/kurt-stolle/frank-boerman-bot/Godeps/_workspace/src/github.com/tucnak/telebot"
 )
 
 type bingo struct {

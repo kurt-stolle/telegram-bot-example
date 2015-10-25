@@ -1,15 +1,13 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
-	"io"
 	"math/rand"
 	"os"
 	"strings"
 	"time"
 
-	"github.com/tucnak/telebot"
+	"github.com/kurt-stolle/frank-boerman-bot/Godeps/_workspace/src/github.com/tucnak/telebot"
 )
 
 const (
@@ -51,42 +49,11 @@ func main() {
 	// Basic variables
 	rand.Seed(time.Now().UTC().UnixNano()) // Set the random Seed
 
-	// Read the key
-	var bufKey bytes.Buffer
-	fi, err := os.Open("key.txt") // Key is in current directory
-	if err != nil {               // Check for errors
-		panic(err)
-	}
-
-	defer func() { // close fi on exit and check for its returned error
-		if err := fi.Close(); err != nil {
-			panic(err)
-		}
-	}()
-
-	bufRead := make([]byte, 1024) // Make a buffer to read into
-	for {
-		// read a chunk
-		n, err := fi.Read(bufRead)
-		if err != nil && err != io.EOF {
-			fi.Close()
-			panic(err)
-		}
-		if n == 0 {
-			break
-		}
-
-		// write a chunk
-		if _, err := bufKey.Write(bufRead[:n]); err != nil {
-			fi.Close()
-			panic(err)
-		}
-	}
-
-	fi.Close()
-
 	// Create a bot
-	key := bufKey.String()
+	port := os.Getenv("FRANKBOT_KEY")
+	if port == "" {
+		panic("Key not set, please set FRANKBOT_KEY environment variable.")
+	}
 	fmt.Println("Telegram API key:", key)
 	bot, err := telebot.NewBot(key)
 

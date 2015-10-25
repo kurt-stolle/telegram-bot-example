@@ -1,0 +1,11 @@
+{
+	"ImportPath": "github.com/kurt-stolle/frank-boerman-bot",
+	"GoVersion": "go1.5.1",
+	"Deps": [
+		{
+			"ImportPath": "github.com/tucnak/telebot",
+			"Comment": "v1.0-27-g72ce8fa",
+			"Rev": "72ce8fae88cff87483f2dc0689f12283b4dc08b6"
+		}
+	]
+}

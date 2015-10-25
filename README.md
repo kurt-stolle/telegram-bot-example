@@ -1,6 +1,9 @@
 # Frank Boerman Bot
 A bot for Telegram using the Go language.
 
+# Heroku
+This app is fully compatible with Heroku
+
 # Installation
 To install, simply run `go get github.com/kurt-stolle/frank-boerman-bot`.
 You may want to create your own test bot if you want to contribute to the project.
