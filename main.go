@@ -50,8 +50,8 @@ func main() {
 	rand.Seed(time.Now().UTC().UnixNano()) // Set the random Seed
 
 	// Create a bot
-	port := os.Getenv("FRANKBOT_KEY")
-	if port == "" {
+	key := os.Getenv("FRANKBOT_KEY")
+	if key == "" {
 		panic("Key not set, please set FRANKBOT_KEY environment variable.")
 	}
 	fmt.Println("Telegram API key:", key)
