@@ -1,8 +1,11 @@
 # Frank Boerman Bot
 A bot for Telegram using the Go language.
 
+# Environment
+This bot uses the following enviroment variables:
+* `FRANKBOT_KEY`: The bot API key for FrankBot
 # Heroku
-This app is fully compatible with Heroku
+This app is fully compatible with Heroku, use Herokuvars to set env variables.
 
 # Installation
 To install, simply run `go get github.com/kurt-stolle/frank-boerman-bot`.
