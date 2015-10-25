@@ -1,1 +1,1 @@
-web: frank-boerman-bot
+worker: frank-boerman-bot
