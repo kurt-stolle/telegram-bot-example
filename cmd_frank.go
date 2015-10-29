@@ -7,13 +7,19 @@ import (
 	"github.com/kurt-stolle/frank-boerman-bot/Godeps/_workspace/src/github.com/tucnak/telebot"
 )
 
-var frankQuotes = [5]string{"Welcome to Uni", "no lol XD", "Offcourse", "Unfortiantly", "#magicaltriangle"}
+var frankQuotes = [8]string{"Welcome to Uni", "no lol XD", "Offcourse", "Unfortiantly", "#magicaltriangle", "indeed!", "Don't call me NSB'er!", "lol im admin, im untouchable"}
 
 func init() {
 	c := addCommand("Frank", "frank")
 	c.action = func(bot *telebot.Bot, message *telebot.Message) {
 		fmt.Println(message.Sender.FirstName, "ran 'frank' in ", message.Chat.Title)
-		switch rand.Intn(5) {
+
+		if message.Sender.Username == "Flinnepin" || message.Sender.Username == "Miega" {
+			bot.SendMessage(message.Chat, "🐷", nil)
+			return
+		}
+
+		switch rand.Intn(6) {
 		case 1:
 			bot.SendMessage(message.Chat, "STFU "+message.Sender.FirstName+"!", nil)
 			break
