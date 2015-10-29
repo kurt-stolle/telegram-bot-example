@@ -14,11 +14,6 @@ func init() {
 	c.action = func(bot *telebot.Bot, message *telebot.Message) {
 		fmt.Println(message.Sender.FirstName, "ran 'frank' in ", message.Chat.Title)
 
-		if message.Sender.Username == "Flinnepin" || message.Sender.Username == "Miega" {
-			bot.SendMessage(message.Chat, "🐷", nil)
-			return
-		}
-
 		switch rand.Intn(6) {
 		case 1:
 			bot.SendMessage(message.Chat, "STFU "+message.Sender.FirstName+"!", nil)
