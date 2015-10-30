@@ -71,16 +71,6 @@ func main() {
 	for message := range messages {
 		text := strings.ToLower(strings.Replace(message.Text, "@"+bot.Identity.Username, "", -1))
 
-		if (message.Sender.Username == "Flinnepin" || message.Sender.Username == "Miega") && rand.Intn(2) == 1 {
-			bot.SendMessage(message.Chat, "🐷", nil)
-			return
-		}
-
-		if message.Sender.Username == "ACCI_bot" && rand.Intn(3) == 1 {
-			bot.SendMessage(message.Chat, "What's an ACCI? Vote Ivaldi!", nil)
-			return
-		}
-
 		for _, c := range commands {
 			if strings.Contains(text, c.initiator) {
 				c.action(bot, &message)
